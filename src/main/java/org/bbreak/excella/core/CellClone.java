@@ -17,7 +17,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 /**
  * Cellの情報を保持するクラス
- * 
+ *
  * POI3.9より、xlsxで、Cellが削除されてRow内にCellがない状態になった時に、
  * あらかじめ取っておいたCellにアクセスしようとすると
  * XmlValueDisconnectedExceptionが発生する
@@ -25,54 +25,54 @@ import org.apache.poi.ss.util.CellRangeAddress;
  * 比較時の関数などを以前の実装のまま使えるようにCellインターフェースを継承している
  * 情報を参照するためのオブジェクトなので、set系の関数を使用しようとすると
  * IllegalStateExceptionが発生する
- * 
+ *
  */
 public class CellClone implements Cell {
 
-	private int rowIndex;
-	
-	private int columnIndex;
+    private int rowIndex;
 
-	private CellStyle cellStyle;
-	
-	private CellType cellTypeEnum;
+    private int columnIndex;
 
-	private Comment cellComment;
-	
-	private Row row;
+    private CellStyle cellStyle;
 
-	private Sheet sheet;
-	
-	private Hyperlink hyperlink;
-	
-	private boolean booleanCellValue;
+    private CellType cellType;
 
-	private String cellFormula;
-	
-	private Date dateCellValue;
-	
-	private byte errorCellValue;
-	
-	private double numericCellValue;
-	
-	private RichTextString richStringCellValue;
+    private Comment cellComment;
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param cell
-	 */
-	public CellClone(Cell cell) {
-		this.rowIndex = cell.getRowIndex();
-		this.columnIndex = cell.getColumnIndex();
-		this.cellStyle = cell.getCellStyle();
-		this.cellTypeEnum = cell.getCellTypeEnum();
-		this.cellComment = cell.getCellComment();
-		this.row = cell.getRow();
-		this.sheet = cell.getSheet();
-		this.hyperlink = cell.getHyperlink();
+    private Row row;
 
-        switch ( this.cellTypeEnum) {
+    private Sheet sheet;
+
+    private Hyperlink hyperlink;
+
+    private boolean booleanCellValue;
+
+    private String cellFormula;
+
+    private Date dateCellValue;
+
+    private byte errorCellValue;
+
+    private double numericCellValue;
+
+    private RichTextString richStringCellValue;
+
+    /**
+     * コンストラクタ
+     *
+     * @param cell
+     */
+    public CellClone(Cell cell) {
+        this.rowIndex = cell.getRowIndex();
+        this.columnIndex = cell.getColumnIndex();
+        this.cellStyle = cell.getCellStyle();
+        this.cellType = cell.getCellType();
+        this.cellComment = cell.getCellComment();
+        this.row = cell.getRow();
+        this.sheet = cell.getSheet();
+        this.hyperlink = cell.getHyperlink();
+
+        switch (this.cellType) {
             case STRING:
                 this.richStringCellValue = cell.getRichStringCellValue();
                 break;
@@ -102,153 +102,182 @@ public class CellClone implements Cell {
             default:
                 break;
         }
-	}
-
-	public CellRangeAddress getArrayFormulaRange() {
-		throw new IllegalStateException("CellClone is not support getArrayFormulaRange().");
-	}
-
-	public boolean getBooleanCellValue() {
-		return booleanCellValue;
-	}
-
-	public int getCachedFormulaResultType() {
-		throw new IllegalStateException("CellClone is not support getCachedFormulaResultType().");
-	}
-
-	public Comment getCellComment() {
-		return cellComment;
-	}
-
-	public String getCellFormula() {
-		return cellFormula;
-	}
-
-	public CellStyle getCellStyle() {
-		return cellStyle;
-	}
-
-	@Deprecated
-	public int getCellType() {
-		return cellTypeEnum.getCode();
-	}
-
-	public int getColumnIndex() {
-		return columnIndex;
-	}
-
-	public Date getDateCellValue() {
-		return dateCellValue;
-	}
-
-	public byte getErrorCellValue() {
-		return errorCellValue;
-	}
-
-	public Hyperlink getHyperlink() {
-		return hyperlink;
-	}
-
-	public double getNumericCellValue() {
-		return numericCellValue;
-	}
-
-	public RichTextString getRichStringCellValue() {
-		return richStringCellValue;
-	}
-
-	public Row getRow() {
-		return row;
-	}
-
-	public int getRowIndex() {
-		return rowIndex;
-	}
-
-	public Sheet getSheet() {
-		return sheet;
-	}
-
-	public String getStringCellValue() {
-        RichTextString str = getRichStringCellValue();
-        return str == null ? null : str.getString();
-	}
-
-	public boolean isPartOfArrayFormulaGroup() {
-		throw new IllegalStateException("CellClone is not support isPartOfArrayFormulaGroup().");
-	}
-
-	public void removeCellComment() {
-		throw new IllegalStateException("CellClone is not support removeCellComment().");
-	}
-
-	public void setAsActiveCell() {
-		throw new IllegalStateException("CellClone is not support setAsActiveCell().");
-	}
-
-	public void setCellComment(Comment comment) {
-		throw new IllegalStateException("CellClone is not support setCellComment(Comment comment).");
-	}
-
-	public void setCellErrorValue(byte value) {
-		throw new IllegalStateException("CellClone is not support setCellErrorValue(byte value).");
-	}
-
-	public void setCellFormula(String formula) throws FormulaParseException {
-		throw new IllegalStateException("CellClone is not support setCellFormula(String formula).");
-	}
-
-	public void setCellStyle(CellStyle style) {
-		throw new IllegalStateException("CellClone is not support setCellStyle(CellStyle style).");
-	}
-
-	public void setCellType(int cellType) {
-		throw new IllegalStateException("CellClone is not support setCellType(int cellType).");
-	}
-
-	public void setCellValue(double value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(double value).");
-	}
-
-	public void setCellValue(Date value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(Date value).");
-	}
-
-	public void setCellValue(Calendar value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(Calendar value).");
-	}
-
-	public void setCellValue(RichTextString value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(RichTextString value).");
-	}
-
-	public void setCellValue(String value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(String value).");
-	}
-
-	public void setCellValue(boolean value) {
-		throw new IllegalStateException("CellClone is not support setCellValue(boolean value).");
-	}
-
-	public void setHyperlink(Hyperlink link) {
-		throw new IllegalStateException("CellClone is not support setHyperlink(Hyperlink link).");
-	}
-	
-	@Override
-	public void removeHyperlink() {
-        throw new IllegalStateException("CellClone is not support removeHyperlink().");
-	}
+    }
 
     @Override
-    public void setCellType( CellType cellType) {
+    public CellRangeAddress getArrayFormulaRange() {
+        throw new IllegalStateException("CellClone is not support getArrayFormulaRange().");
+    }
+
+    @Override
+    public boolean getBooleanCellValue() {
+        return booleanCellValue;
+    }
+
+    @Override
+    public CellType getCachedFormulaResultType() {
+        throw new IllegalStateException("CellClone is not support getCachedFormulaResultType().");
+    }
+
+    @Override
+    public Comment getCellComment() {
+        return cellComment;
+    }
+
+    @Override
+    public String getCellFormula() {
+        return cellFormula;
+    }
+
+    @Override
+    public CellStyle getCellStyle() {
+        return cellStyle;
+    }
+
+    @Override
+    public CellType getCellType() {
+        return cellType;
+    }
+
+    @Override
+    public int getColumnIndex() {
+        return columnIndex;
+    }
+
+    @Override
+    public Date getDateCellValue() {
+        return dateCellValue;
+    }
+
+    @Override
+    public byte getErrorCellValue() {
+        return errorCellValue;
+    }
+
+    @Override
+    public Hyperlink getHyperlink() {
+        return hyperlink;
+    }
+
+    @Override
+    public double getNumericCellValue() {
+        return numericCellValue;
+    }
+
+    @Override
+    public RichTextString getRichStringCellValue() {
+        return richStringCellValue;
+    }
+
+    @Override
+    public Row getRow() {
+        return row;
+    }
+
+    @Override
+    public int getRowIndex() {
+        return rowIndex;
+    }
+
+    @Override
+    public Sheet getSheet() {
+        return sheet;
+    }
+
+    @Override
+    public String getStringCellValue() {
+        RichTextString str = getRichStringCellValue();
+        return str == null ? null : str.getString();
+    }
+
+    @Override
+    public boolean isPartOfArrayFormulaGroup() {
+        throw new IllegalStateException("CellClone is not support isPartOfArrayFormulaGroup().");
+    }
+
+    @Override
+    public void removeCellComment() {
+        throw new IllegalStateException("CellClone is not support removeCellComment().");
+    }
+
+    @Override
+    public void setAsActiveCell() {
+        throw new IllegalStateException("CellClone is not support setAsActiveCell().");
+    }
+
+    @Override
+    public void setCellComment(Comment comment) {
+        throw new IllegalStateException("CellClone is not support setCellComment(Comment comment).");
+    }
+
+    @Override
+    public void setCellErrorValue(byte value) {
+        throw new IllegalStateException("CellClone is not support setCellErrorValue(byte value).");
+    }
+
+    @Override
+    public void setCellFormula(String formula) throws FormulaParseException {
+        throw new IllegalStateException("CellClone is not support setCellFormula(String formula).");
+    }
+
+    @Override
+    public void setCellStyle(CellStyle style) {
+        throw new IllegalStateException("CellClone is not support setCellStyle(CellStyle style).");
+    }
+
+    @Override
+    public void setCellValue(double value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(double value).");
+    }
+
+    @Override
+    public void setCellValue(Date value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(Date value).");
+    }
+
+    @Override
+    public void setCellValue(Calendar value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(Calendar value).");
+    }
+
+    @Override
+    public void setCellValue(RichTextString value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(RichTextString value).");
+    }
+
+    @Override
+    public void setCellValue(String value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(String value).");
+    }
+
+    @Override
+    public void setCellValue(boolean value) {
+        throw new IllegalStateException("CellClone is not support setCellValue(boolean value).");
+    }
+
+    @Override
+    public void setHyperlink(Hyperlink link) {
+        throw new IllegalStateException("CellClone is not support setHyperlink(Hyperlink link).");
+    }
+
+    @Override
+    public void removeHyperlink() {
+        throw new IllegalStateException("CellClone is not support removeHyperlink().");
+    }
+
+    @Deprecated
+    @Override
+    public void setCellType(CellType cellType) {
         throw new IllegalStateException("CellClone is not support setCellType().");
     }
 
+    @Deprecated
     @Override
     public CellType getCellTypeEnum() {
-        return cellTypeEnum;
+        return cellType;
     }
 
+    @Deprecated
     @Override
     public CellType getCachedFormulaResultTypeEnum() {
         throw new IllegalStateException("CellClone is not support getCachedFormulaResultTypeEnum().");
@@ -257,6 +286,16 @@ public class CellClone implements Cell {
     @Override
     public CellAddress getAddress() {
         return new CellAddress(this);
+    }
+
+    @Override
+    public void setBlank() {
+        throw new UnsupportedOperationException("CellClone is not support setBlank().");
+    }
+
+    @Override
+    public void removeFormula() throws IllegalStateException {
+        throw new UnsupportedOperationException("CellClone is not support removeFormula().");
     }
 
 }

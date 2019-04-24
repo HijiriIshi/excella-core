@@ -96,7 +96,7 @@ public final class PoiUtil {
         Object value = null;
 
         if ( cell != null) {
-            switch ( cell.getCellTypeEnum()) {
+            switch ( cell.getCellType()) {
                 case BLANK:
                     break;
                 case BOOLEAN:
@@ -120,7 +120,7 @@ public final class PoiUtil {
                     FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                     // 式を評価
                     CellValue cellValue = evaluator.evaluate( cell);
-                    CellType cellType = cellValue.getCellTypeEnum();
+                    CellType cellType = cellValue.getCellType();
                     // 評価結果の型で分岐
                     switch ( cellType) {
                         case BLANK:
@@ -167,6 +167,7 @@ public final class PoiUtil {
      * Bug 47071として報告済み
      * 
      * @param cell 対象セル
+     * @return 
      */
     public static boolean isCellDateFormatted( Cell cell) {
         if ( cell == null) {
@@ -241,10 +242,10 @@ public final class PoiUtil {
      * @return 取得した値
      */
     public static Object getCellValue( Cell cell, Class<?> propertyClass) {
-        if ( cell.getCellTypeEnum() == CellType.BLANK) {
+        if ( cell.getCellType() == CellType.BLANK) {
             // セルが空
             return null;
-        } else if ( cell.getCellTypeEnum() == CellType.STRING && StringUtil.isEmpty( cell.getStringCellValue())) {
+        } else if ( cell.getCellType() == CellType.STRING && StringUtil.isEmpty( cell.getStringCellValue())) {
             // セルタイプが文字列で、空の場合はnullを返す
             return null;
         }
@@ -267,7 +268,7 @@ public final class PoiUtil {
                 } else if ( propertyClass.equals( BigDecimal.class)) {
                     return new BigDecimal( number.doubleValue());
                 } else if ( propertyClass.equals( Byte.class)) {
-                    return new Byte( number.byteValue());
+                    return number.byteValue();
                 } else {
                     return number;
                 }
@@ -283,8 +284,7 @@ public final class PoiUtil {
                 String strValue = null;
                 if ( value instanceof String) {
                     strValue = ( String) value;
-                }
-                if ( value instanceof Double) {
+                } else if ( value instanceof Double) {
                     // Double -> Stringに変換する場合は整数に変換
                     strValue = String.valueOf( (( Double) value).intValue());
                 } else {
@@ -310,18 +310,18 @@ public final class PoiUtil {
             }
             if ( value instanceof Double) {
                 if ( byte.class.isAssignableFrom( propertyClass)) {
-                    int intValue = Double.valueOf( ( Double) value).intValue();
+                    int intValue = ((Double)value).intValue();
                     value = Byte.valueOf( String.valueOf( intValue));
                 } else if ( short.class.isAssignableFrom( propertyClass)) {
-                    value = Double.valueOf( ( Double) value).shortValue();
+                    value = ((Double)value).shortValue();
                 } else if ( int.class.isAssignableFrom( propertyClass)) {
-                    value = Double.valueOf( ( Double) value).intValue();
+                    value = ((Double)value).intValue();
                 } else if ( long.class.isAssignableFrom( propertyClass)) {
-                    value = Double.valueOf( ( Double) value).longValue();
+                    value = ((Double)value).longValue();
                 } else if ( float.class.isAssignableFrom( propertyClass)) {
-                    value = Double.valueOf( ( Double) value).floatValue();
+                    value = ((Double)value).floatValue();
                 } else if ( double.class.isAssignableFrom( propertyClass)) {
-                    value = Double.valueOf( ( Double) value).doubleValue();
+                    value = ((Double)value);
                 }
             }
             return value;
@@ -380,7 +380,7 @@ public final class PoiUtil {
         if ( fromCell != null) {
 
             // 値
-            CellType cellType = fromCell.getCellTypeEnum();
+            CellType cellType = fromCell.getCellType();
             switch ( cellType) {
                 case BLANK:
                     break;
@@ -408,10 +408,13 @@ public final class PoiUtil {
                      && fromCell.getSheet().getWorkbook().equals(toCell.getSheet().getWorkbook())) {
                 toCell.setCellStyle( fromCell.getCellStyle());
             }
-
             // コメント
-            if ( fromCell.getCellComment() != null) {
-                toCell.setCellComment( fromCell.getCellComment());
+            try {
+                if ( fromCell.getCellComment() != null) {
+                    toCell.setCellComment( fromCell.getCellComment());
+                }
+            } catch (IndexOutOfBoundsException ex) {
+                // TODO 不具合解消され次第修正
             }
         }
     }
@@ -705,7 +708,7 @@ public final class PoiUtil {
      */
     private static Set<CellRangeAddress> getMergedAddress( Sheet sheet, CellRangeAddress rangeAddress) {
         // 範囲切れてたらエラー
-        Set<CellRangeAddress> targetCellSet = new HashSet<CellRangeAddress>();
+        Set<CellRangeAddress> targetCellSet = new HashSet<>();
         int fromSheetMargNums = sheet.getNumMergedRegions();
         for ( int i = 0; i < fromSheetMargNums; i++) {
             CellRangeAddress mergedAddress = null;
@@ -756,12 +759,12 @@ public final class PoiUtil {
         int toColumnIndex = rangeAddress.getLastColumn();
 
         // セルの削除、行の削除
-        List<Row> removeRowList = new ArrayList<Row>();
+        List<Row> removeRowList = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.rowIterator();
         while ( rowIterator.hasNext()) {
             Row row = rowIterator.next();
             if ( fromRowIndex <= row.getRowNum() && row.getRowNum() <= toRowIndex) {
-                Set<Cell> removeCellSet = new HashSet<Cell>();
+                Set<Cell> removeCellSet = new HashSet<>();
                 Iterator<Cell> cellIterator = row.cellIterator();
                 while ( cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
@@ -795,7 +798,7 @@ public final class PoiUtil {
         Set<CellRangeAddress> clearMergedCellSet = getMergedAddress( sheet, rangeAddress);
 
         // 結合セルの削除
-        SortedSet<Integer> deleteIndexs = new TreeSet<Integer>( Collections.reverseOrder());
+        SortedSet<Integer> deleteIndexs = new TreeSet<>( Collections.reverseOrder());
         int fromSheetMargNums = sheet.getNumMergedRegions();
         for ( int i = 0; i < fromSheetMargNums; i++) {
 
@@ -836,7 +839,7 @@ public final class PoiUtil {
             Iterator<Cell> cellIterator = row.cellIterator();
             while ( cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                if ( cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+                if ( cell.getCellType() == CellType.BLANK) {
                     cell.setCellValue( "");
                 }
             }
@@ -887,7 +890,7 @@ public final class PoiUtil {
      * セルにハイパーリンクを設定する。
      * 
      * @param cell セル
-     * @param type リンクタイプ
+     * @param hyperlinkType リンクタイプ
      * @param address ハイパーリンクアドレス
      * @see org.apache.poi.common.usermodel.Hyperlink
      */
@@ -935,7 +938,7 @@ public final class PoiUtil {
                 cell.setCellValue( boolValue);
             }
         } else {
-            cell.setCellType( CellType.BLANK);
+            cell.setBlank();
             cell.setCellStyle( style);
         }
     }
